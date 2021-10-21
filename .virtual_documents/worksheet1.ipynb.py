@@ -52,7 +52,14 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 
-def plot_line(ax, w):
+def plot_line(ax, w, noise=None):
+    """Plot a line given by the formula y = w1*x + w0 through two data points (-5, 1) and (5, 1)."""
+    
+    if noise is None:
+        noise = np.zeros((2,))
+        
+    w += noise
+    
     # Input data.
     X = np.zeros((2, 2))
     X[0, 0] = -5.0
@@ -65,14 +72,19 @@ def plot_line(ax, w):
 
 
 # Create prior distribution.
-tau = 1.0 * np.eye(2)
+
+# This is the covariance matrix for the prior distribution of two parameters: w1 and w0.
+# They are independent, with equal variance 1.
+tau = 1.0 * np.eye(2) 
 w0 = np.zeros((2, 1))
 
 w0
 
 
-# Sample from prior.
+# Sample n_samples samples from the prior distribution.
 n_samples = 100
+
+# The prior distribution is a multivariate normal with µ = 0 and covariance matrix tau.
 w_sample = np.random.multivariate_normal(w0.flatten(), tau, size=n_samples)
 
 w_sample[:5] # This is the prior p(w)
@@ -114,7 +126,30 @@ def plotdistribution(ax, mu, Sigma):
     plt.show()
 
 
-plotdistribution(ax, w_sample[:1], tau)
+mu_prior = np.zeros((2, 1))
+sigma_prior = 0.3*np.eye(2)
+
+# Create plot.
+fig = plt.figure(figsize=(10, 5))
+ax = fig.add_subplot(111)
+
+plotdistribution(ax, mu_prior, sigma_prior)
+
+
+import scipy.stats as stats
+
+
+w = np.array([-1.3, 0.5])
+
+epsilon_samples = np.random.normal(loc=0, scale=0.3, size=100)
+
+# Create plot.
+fig = plt.figure(figsize=(10, 5))
+ax = fig.add_subplot(111)
+
+
+for epsilon in epsilon_samples:
+    plot_line(ax, w, np.asarray([epsilon, epsilon]).reshape((2,)))
 
 
 index = np.random.permutation(X.shape[0])
@@ -122,11 +157,16 @@ for i in range(0, index.shape[0]):
     X_i = X[index, :]
     y_i = y[index]
     
-    # Compute posterior.
+    # Compute posterior, i.e. having taken into account this X_i, y_i, update µ and sigma.
     
-    # Visualise posterior.
-    # Visualise samples from posterior with the data.
-    # Print out the mean of the posterior.
+    # Visualise posterior, i.e. plotdistribution with some µ and Sigma.
+    
+    # Visualise samples from posterior with the data, i.e. sample some weights from the posterior distribution and plot lines with those.
+    
+    # Print out the mean of the posterior - µ
+
+
+np.linspace(-1, 1, 201)
 
 
 
